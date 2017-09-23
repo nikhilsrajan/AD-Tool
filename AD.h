@@ -210,6 +210,7 @@ public:
     void operator =(var<T> x){ this->p = x.getself(); }
     void operator =(OP<T> O){ this->p = O.getself(); }
     void operator =(AD<T> G){ this->p = G.geteval(); }
+    void operator =(gNode<T> g){ this->p = g.p; }
 
     void setNodePointer(node<T> *new_p){ this->p = new_p; }
     node<T>* getNodePointer(){ return this->p; }
@@ -420,6 +421,9 @@ public:
     template<class U>
     friend AD<U> copyAD(AD<U>);
 
+    template<class U>
+    friend AD<U> sCopyAD(AD<U>);
+
     /**Math operators */
     AD<T> operator +(); //defined
     AD<T> operator -(); //defined
@@ -607,6 +611,34 @@ node<T>* cloneNode(node<T>* root){
             node<T> *O = root->clone();
             O->setLchild(cloneNode(O->getLchild()));
             O->setRchild(cloneNode(O->getRchild()));
+            return O;
+            break;
+    }
+}
+
+template<class T>
+AD<T> sCopyAD(AD<T> G){
+    AD<T> H;
+    H.val = G.val;
+    H.eval = sCloneNode(G.eval);
+    return H;
+}
+
+template<class T>
+node<T>* sCloneNode(node<T>* root){
+    switch(root->gettype()){
+        case 's': return root; break;
+        case 'v':{
+            VAL<T> val = root->getVAL();
+            scalar<T> *s = new scalar<T>(val.getf());
+            return s;
+            break;
+        }
+        case 'g': return root; break;
+        case 'o':
+            node<T> *O = root->clone();
+            O->setLchild(sCloneNode(O->getLchild()));
+            O->setRchild(sCloneNode(O->getRchild()));
             return O;
             break;
     }
