@@ -624,7 +624,7 @@ public:
 
     /**Gradient*/
     template <class U>
-    friend vector<T> grad(AD<U>);
+    friend vector<T> grad(int, var<T>**, AD<U>);
 
     /**Jacobian*/
     template <class U>
@@ -1764,10 +1764,10 @@ vector<T> functionVector(int numF, AD<T>* AD_list){
 
 
 template<class T>
-vector<T> grad(AD<T> G){
+vector<T> grad(int n, var<T>** varList, AD<T> G){
     vector<T> V(idc);
     for(int i = 0; i<idc; i++)
-        V[i] = G.val[i];
+        V[i] = G.val[varList[j]->getid()];
 
     return V;
 }
