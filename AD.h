@@ -1,11 +1,18 @@
+/*
+ * File:   AD.h
+ * Author: nikhilsrajan, with modifications from satyaprasad
+ *
+ * Created on September 11, 2017, 1:18 AM
+ */
+
 /** Make changes in the code to take care of intermediate variable inclusion!! */
 #ifndef AD_H
 #define AD_H
 
 #include <iostream>
 #include <cmath>
-#include "vector.h"
-#include "matrix.h"
+#include <vector>
+#include "SparseMatrix.h"
 
 static int idc = 0;
 
@@ -115,6 +122,8 @@ public:
     void operator =(scalar<T> s){ this->p = s.getval(); }
     void operator =(var<T> x){ this->val = x.val; }
 
+    int getid(){ return id; }
+
     void disp(){
         cout<<"VAR: id = "<<this->id<<", val = "<<this->val<<", address = "<<this->self<<endl;
     }
@@ -210,12 +219,20 @@ public:
     void operator =(var<T> x){ this->p = x.getself(); }
     void operator =(OP<T> O){ this->p = O.getself(); }
     void operator =(AD<T> G){ this->p = G.geteval(); }
+    void operator =(gNode<T> g){ this->p = g.p; }
 
     void setNodePointer(node<T> *new_p){ this->p = new_p; }
     node<T>* getNodePointer(){ return this->p; }
 
     node<T>* clone(){ return this->p; }
-    VAL<T> getVAL(){ return this->p->getVAL(); }
+    VAL<T> getVAL(){
+        if(this->p != NULL)
+            return this->p->getVAL();
+        else{
+            VAL<T> V(0);
+            return V;
+        }
+    }
     node<T>* getself(){ return this->self; }
     void disp(){ this->p->disp(); }
     char gettype(){ return this->type; }
@@ -224,12 +241,31 @@ public:
 
 /**CLASS: VAL ***************************************/
 template <class T>
-class VAL
-{
+class VAL{
     T f;
     T * df;
 public:
     VAL();
+    VAL(T k){
+        this->f = k;
+        this->df = new T[idc];
+
+        for(int i = 0; i<idc; i++)
+            this->df[i] = 0.0;
+
+    }
+    VAL(T k, int id){
+        this->f = k;
+        this->df = new T[idc];
+
+        for(int i = 0; i<id; i++)
+            this->df[i] = 0.0;
+
+        this->df[id] = 1.0;
+
+        for(int i = id+1; i<idc; i++)
+            this->df[i] = 0.0;
+    }
 
     void disp(){
         cout<<"f = "<<this->f<<endl;
@@ -420,6 +456,9 @@ public:
     template<class U>
     friend AD<U> copyAD(AD<U>);
 
+    template<class U>
+    friend AD<U> sCopyAD(AD<U>);
+
     /**Math operators */
     AD<T> operator +(); //defined
     AD<T> operator -(); //defined
@@ -580,13 +619,16 @@ public:
     friend AD<U> operator ^(gNode<U>, gNode<U>); //defined
 
     /**Advanced operations*/
+    template<class U>
+    friend vector<U> functionVector(int, AD<U>*);
+
     /**Gradient*/
     template <class U>
-    friend vector<U> grad(AD<U>);
+    friend vector<T> grad(AD<U>);
 
     /**Jacobian*/
     template <class U>
-    friend matrix<U> jacobian(int, AD<U>*);
+    friend SparseMatrix<U> jacobian(int, var<U>**, AD<U>*);
 };
 
 template<class T>
@@ -603,12 +645,49 @@ node<T>* cloneNode(node<T>* root){
         case 's': return root; break;
         case 'v': return root; break;
         case 'g': return cloneNode(root->clone()); break;
-        case 'o':
+        case 'o': {
             node<T> *O = root->clone();
             O->setLchild(cloneNode(O->getLchild()));
             O->setRchild(cloneNode(O->getRchild()));
             return O;
             break;
+        }
+        default :
+            cout<<"no such case exist!";
+            exit(1);
+
+    }
+}
+
+template<class T>
+AD<T> sCopyAD(AD<T> G){
+    AD<T> H;
+    H.val = G.val;
+    H.eval = sCloneNode(G.eval);
+    return H;
+}
+
+template<class T>
+node<T>* sCloneNode(node<T>* root){
+    switch(root->gettype()){
+        case 's': return root; break;
+        case 'v':{
+            VAL<T> val = root->getVAL();
+            scalar<T> *s = new scalar<T>(val.getf());
+            return s;
+            break;
+        }
+        case 'g': return root; break;
+        case 'o':{
+            node<T> *O = root->clone();
+            O->setLchild(sCloneNode(O->getLchild()));
+            O->setRchild(sCloneNode(O->getRchild()));
+            return O;
+            break;
+        }
+        default :
+            cout<<"No such case exist!";
+            exit(1);
     }
 }
 
@@ -649,6 +728,7 @@ void AD<T>::operator =(AD<T> G){
 
 template<class T>
 void AD<T>::operator =(gNode<T> g){
+    if(g.getNodePointer() == NULL)
     this->val = g.getVAL();
     this->eval = g.getself();
 }
@@ -1675,19 +1755,33 @@ AD<T> operator ^(gNode<T> g, gNode<T> h){
 
 /**Advanced operations*/
 template<class T>
-vector<T> grad(AD<T> G){
+vector<T> functionVector(int numF, AD<T>* AD_list)
+{
+    vector<T> V(numF);
+    for(int i = 0; i<numF; i++)
+        V[i] = AD_list[i].val.getf();
+    return V;
+}
+
+
+template<class T>
+vector<T> grad(AD<T> G)
+{
     vector<T> V(idc);
     for(int i = 0; i<idc; i++)
         V[i] = G.val[i];
 
     return V;
 }
+
 template<class T>
-matrix<T> jacobian(int n, AD<T>* AD_list){
-    matrix<T> M(n, idc);
+SparseMatrix<T> jacobian(int n, var<T>** varList, AD<T>* AD_list)
+{
+    //matrix<T> M(n, idc);
+    SparseMatrix<T> M(n);
     for(int i = 0; i<n; i++)
-        for(int j = 0; j<idc; j++)
-            M(i, j) = AD_list[i].val[j];
+        for(int j = 0; j<n; j++)
+            M(i, j, AD_list[i].val[varList[j]->getid()]);
 
     return M;
 }
