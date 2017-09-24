@@ -1767,7 +1767,7 @@ template<class T>
 vector<T> grad(int n, var<T>** varList, AD<T> G){
     vector<T> V(idc);
     for(int i = 0; i<idc; i++)
-        V[i] = G.val[varList[j]->getid()];
+        V[i] = G.val[varList[i]->getid()];
 
     return V;
 }
