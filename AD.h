@@ -1755,8 +1755,7 @@ AD<T> operator ^(gNode<T> g, gNode<T> h){
 
 /**Advanced operations*/
 template<class T>
-vector<T> functionVector(int numF, AD<T>* AD_list)
-{
+vector<T> functionVector(int numF, AD<T>* AD_list){
     vector<T> V(numF);
     for(int i = 0; i<numF; i++)
         V[i] = AD_list[i].val.getf();
@@ -1765,8 +1764,7 @@ vector<T> functionVector(int numF, AD<T>* AD_list)
 
 
 template<class T>
-vector<T> grad(AD<T> G)
-{
+vector<T> grad(AD<T> G){
     vector<T> V(idc);
     for(int i = 0; i<idc; i++)
         V[i] = G.val[i];
@@ -1775,9 +1773,7 @@ vector<T> grad(AD<T> G)
 }
 
 template<class T>
-SparseMatrix<T> jacobian(int n, var<T>** varList, AD<T>* AD_list)
-{
-    //matrix<T> M(n, idc);
+SparseMatrix<T> jacobian(int n, var<T>** varList, AD<T>* AD_list){
     SparseMatrix<T> M(n);
     for(int i = 0; i<n; i++)
         for(int j = 0; j<n; j++)
