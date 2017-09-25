@@ -13,6 +13,8 @@
 #include<vector>
 #include "SparseMatrix.h"
 
+#define eps 0.00001
+
 using namespace std;
 
 
@@ -335,12 +337,10 @@ vector<T> Gauss_Jacobi<T>::solve(SparseMatrix<T> M, vector<T> u)
 {
     vector<T> x,xn;
     int i,j,flag;
-    T sum,eps;
+    T sum;
 
     x=vector<T>(u.size());
     xn=vector<T>(u.size());
-    cout<<"Enter the accuracy u want\n";
-    cin>>eps;
     for(i=0;i<u.size();i++)
         x[i]=0;
     flag=0;
@@ -398,7 +398,7 @@ vector<T> Gauss_Seidal<T>::solve(SparseMatrix<T> M, vector<T> u)
 {
     vector<T> x,xn;
     int test,i,j;
-    T g,sum,eps=0.001;
+    T g,sum;
 
     x=vector<T>(u.size());
     xn=vector<T>(u.size());
@@ -467,7 +467,7 @@ template<class T>
 vector<T> SOR<T>::solve(SparseMatrix<T> M, vector<T> u){
     vector<T> x,xn;
     int i,j,flag;
-    T sum,eps=0.001,w=1;
+    T sum,w=1;
 
     x=vector<T>(u.size());
     xn=vector<T>(u.size());

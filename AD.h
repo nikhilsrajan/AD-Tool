@@ -6,6 +6,7 @@
  */
 
 /** Make changes in the code to take care of intermediate variable inclusion!! */
+/** NOTE: Always create var<T> objects first, only then AD<T> objects, else idc = 0, no memory location will be allocated to df, df elements have a risk of being overwritten */
 #ifndef AD_H
 #define AD_H
 
@@ -15,6 +16,8 @@
 #include "SparseMatrix.h"
 
 static int idc = 0;
+
+int getidc(){ return idc; }
 
 using namespace std;
 
@@ -52,16 +55,16 @@ public:
 template<class T>
 void node<T>::InOrderTreeWalk(){
     if(this->Lchild != NULL){
-        cout<<"LEFT: ";
+        //cout<<"LEFT: ";
         this->Lchild->InOrderTreeWalk();
     }
 
-    cout<<"THIS ";
-    cout<<" ["<<this->gettype()<<"] : ";
+    //cout<<"THIS ";
+    //cout<<" ["<<this->gettype()<<"] : ";
     this->disp();
 
     if(this->Rchild != NULL){
-        cout<<"RGHT: ";
+        //cout<<"RGHT: ";
         this->Rchild->InOrderTreeWalk();
     }
 }
@@ -83,7 +86,8 @@ public:
     void operator =(scalar<T> s){ this->val = s.val; }
 
     void disp(){
-        cout<<"SCALAR: val = "<<this->val<<", address = "<<this->self<<endl;
+        //cout<<"SCALAR: val = "<<this->val<<", address = "<<this->self<<endl;
+        cout<<val<<' ';
     }
     node<T>* clone(){ return this; }
     scalar<T>* getself(){ return this->self; }
@@ -125,7 +129,8 @@ public:
     int getid(){ return id; }
 
     void disp(){
-        cout<<"VAR: id = "<<this->id<<", val = "<<this->val<<", address = "<<this->self<<endl;
+        //cout<<"VAR: id = "<<this->id<<", val = "<<this->val<<", address = "<<this->self<<endl;
+        cout<<"var("<<id<<") ";
     }
     node<T>* clone(){ return this; }
     var<T>* getself(){ return this->self; }
@@ -174,7 +179,8 @@ public:
     node<T>* clone(){ return new OP<T>(*this); }
 
     void disp(){
-        cout<<"OP: op = "<<this->op<<", address = "<<this->self<<endl;
+        //cout<<"OP: op = "<<this->op<<", address = "<<this->self<<endl;
+        cout<<op<<' ';
     }
 
     VAL<T> getVAL();
@@ -229,7 +235,7 @@ public:
         if(this->p != NULL)
             return this->p->getVAL();
         else{
-            VAL<T> V(0);
+            VAL<T> V(1);
             return V;
         }
     }
@@ -273,6 +279,8 @@ public:
         for(int i = 0; i<idc; i++)
             cout<<this->df[i]<<"   ";
         cout<<endl;
+        cout<<"f ["<<&f<<"]\n";
+        cout<<"df->["<<df<<"]\n";
     }
 
     void input_f(T k){ this->f = k; }
@@ -1765,7 +1773,7 @@ vector<T> functionVector(int numF, AD<T>* AD_list){
 
 template<class T>
 vector<T> grad(int n, var<T>** varList, AD<T> G){
-    vector<T> V(idc);
+    vector<T> V(n);
     for(int i = 0; i<idc; i++)
         V[i] = G.val[varList[i]->getid()];
 

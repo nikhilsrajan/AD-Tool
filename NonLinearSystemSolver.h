@@ -24,7 +24,7 @@ template <class T>
 class NonLinearSystemSolver {
 public:
     virtual void input(int, var<T>**, vector<T>, AD<T>*, solver<T>*) = 0;
-   virtual vector<T> NonLinearSolve()=0; //pure virtual function
+    virtual vector<T> NonLinearSolve()=0; //pure virtual function
 private:
 
 };
@@ -117,25 +117,39 @@ vector<T> Newton<T>::NonLinearSolve(){
            AD_list[i].reeval();
 
         jacob_f = jacobian(numberOfVariables, variables, AD_list);
-        if(track)
+        if(track){
             cout<<"Jacobian created\n";
+            //cout<<"Jacobian Matrix size = ["<<jacob_f.getRowCount()<<" x "<<jacob_f.getColCount()<<"]\n";
+            //cout<<"\nJacobian:\n";
+            //jacob_f.disp();
+            cout<<endl;
+        }
+
         funcVector = functionVector(numberOfVariables, AD_list);
-        if(track)
+        if(track){
             cout<<"Function Vector created\n";
+            //disp(funcVector);
+            //cout<<endl;
+        }
         //jacob_f.disp();
         //cout << "initial vec: \n";
         //disp(initialVec);
         //cout << "\nfunc vector: \n";
         //disp(funcVector);
         b =  (jacob_f * initialVec) - funcVector;
-        if(track)
+        if(track){
             cout<<"b Vector created\n";
+            //disp(b);
+            //cout<<endl;
+        }
         if(track)
-            cout<<"Entering linear solver\n";
+            cout<<"Running linear solver\n";
+
         initialVec = sol->solve(jacob_f,b);
+
         newVec = initialVec;
-        //cout<< endl<< "updated solution : \n";
-        //disp(initialVec);
+        cout<< endl<< "updated solution : \n";
+        disp(initialVec);
         T error = abs(norm(oldVec-newVec));
         cout<<"\nerror = "<<error<<endl;
 
@@ -258,7 +272,7 @@ vector<T> Broyden<T>::NonLinearSolve(){
         if(track)
             cout<<"b Vector created\n";
         if(track)
-            cout<<"Entering linear solver\n";
+            cout<<"Running linear solver\n";
         initialVec = sol->solve(jacob_f,b);
         newVec = initialVec;
         //cout<< endl<< "updated solution : ";

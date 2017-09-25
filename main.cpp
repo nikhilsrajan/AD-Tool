@@ -28,7 +28,7 @@ int main(){
     B = 1;
     C = 0;
     D = 0;
-    E = 2;
+    E = 2.0;
 
 
     /**Problem 2: 1D DE
@@ -45,13 +45,15 @@ int main(){
     */
 
     vector<double> InitialGuess((Nx-2)*(Ny-2), 1);
-    Newton<double> NS;
+
+
+    Broyden<double> BS;
     Gauss_Seidal<double> GS;
     var<double> *varlist[] = {&x};
 
 
     NonLinearDE<double> nde(1,varlist,U,A,B,C,D,E,p,q,r,s,a,b,c,d,Nx,Ny);
-    nde.solveDE(&InitialGuess, &NS);
+    nde.solveDE(&InitialGuess, &BS, &GS);
 
     SparseMatrix<double> Solution = nde.getSolution();
     cout<<endl<<endl<<"Solution:\n";

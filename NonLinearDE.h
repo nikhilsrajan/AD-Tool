@@ -14,6 +14,8 @@
 #include "NonLinearSystemSolver.h"
 #include "SparseMatrix.h"
 
+#define track 0
+
 using namespace std;
 
 template<class T>
@@ -105,14 +107,34 @@ void NonLinearDE<T> :: solveDE(vector<T>* initialGuess,  NonLinearSystemSolver<T
             Ui_ = v_mesh[i+1][j];
             Uj_ = v_mesh[i][j+1];
 
-            AD<T> C1 = this->A*(Ui_ -2.0*(*(this->U)) + _Ui)/(h*h);
-            AD<T> C2 = this->B*(Uj_ -2.0*(*(this->U)) + _Uj)/(k*k);
-            AD<T> C3 = this->C*(Ui_ - _Ui)/(2.0*h);
-            AD<T> C4 = this->D*(Uj_ - _Uj)/(2.0*k);
+            T c = 2.0; // to correct type casting problems
+
+            AD<T> C1 = this->A*(Ui_ -c*(*(this->U)) + _Ui)/(h*h);
+            AD<T> C2 = this->B*(Uj_ -c*(*(this->U)) + _Uj)/(k*k);
+            AD<T> C3 = this->C*(Ui_ - _Ui)/(c*h);
+            AD<T> C4 = this->D*(Uj_ - _Uj)/(c*k);
 
             AD<T> temp = sCopyAD(C1 + C2 + C3 + C4 + this->E);
             F_list[count++] = copyAD(temp);  //Slight Ambiguity, the boundary terms variables instead of scalars
+            if(track){
+                node<T>* p = F_list[count - 1].geteval();
+                p->InOrderTreeWalk();
+                cout<<endl;
+            }
         }
+    }
+
+
+
+    if(track){
+        cout<<endl;
+        for(int i = 0; i<this->Nx; i++){
+            for(int j = 0; j<this->Ny; j++){
+                VAL<T> v = v_mesh[i][j].getVAL();
+                cout<<"U ("<<i<<", "<<j<<") = var("<<v_mesh[i][j].getid()<<") = "<<v.getf()<<endl;
+            }
+        }
+        cout<<endl;
     }
 
     var<T> **v_linear = new var<T>*[(this->Nx - 2)*(this->Ny - 2)];
