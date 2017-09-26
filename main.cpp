@@ -53,7 +53,7 @@ int main(){
 
 
     NonLinearDE<double> nde(1,varlist,U,A,B,C,D,E,p,q,r,s,a,b,c,d,Nx,Ny);
-    nde.solveDE(&InitialGuess, &BS, &GS);
+    nde.solveDE(&InitialGuess, &BS);
 
     SparseMatrix<double> Solution = nde.getSolution();
     cout<<endl<<endl<<"Solution:\n";

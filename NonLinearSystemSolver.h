@@ -291,11 +291,15 @@ vector<T> Broyden<T>::NonLinearSolve(){
 
         newfuncVector = functionVector(numberOfVariables, AD_list);
 
-        tempvec = ((newfuncVector - oldfuncVector) - jacob_f * (oldVec - newVec)/(norm(newVec)*norm(newVec)));
+        tempvec = ((newfuncVector - oldfuncVector) - jacob_f * (newVec - oldVec))/(norm(newVec - oldVec)*norm(newVec - oldVec));
         jacob_f = jacob_f + tempvec * (oldVec - newVec);
 
-        if(track)
+        if(track){
             cout<<"Jacobian Matrix updated\n";
+            //cout<<"\njacobian:\n";
+            //jacob_f.disp();
+            //cout<<endl;
+        }
 
         T error = abs(norm(oldVec-newVec));
         cout<<"\nerror = "<<error<<endl;
