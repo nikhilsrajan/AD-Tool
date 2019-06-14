@@ -1,4 +1,6 @@
-/** Make changes in the code to take care of intermediate variable inclusion!! */
+/* Make changes in the code to take care of intermediate variable inclusion!! */
+/* Replace friend functions */
+/* Define gNode operators */
 #pragma once
 
 
