@@ -24,6 +24,27 @@
     <ClInclude Include="vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="var.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VAL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AD-test.cpp">

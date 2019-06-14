@@ -1,6 +1,8 @@
-#include<iostream>
-#include<cmath>
-#include<cstdlib>
+#pragma once
+
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
 
 using namespace std;
 
@@ -10,11 +12,13 @@ class matrix
 	T** a;
 	int rsize, csize;
 public:
-	matrix()
-	{
+	matrix(){
 
 	}
 	matrix(int, int);
+	~matrix() {
+		delete a;
+	}
 	void input();
 	void disp();
 	matrix<T> operator+ (matrix<T>);
