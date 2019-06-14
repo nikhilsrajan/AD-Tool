@@ -1,6 +1,8 @@
-#include<iostream>
-#include<cmath>
-#include<cstdlib>
+#pragma once
+
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
 
 using namespace std;
 

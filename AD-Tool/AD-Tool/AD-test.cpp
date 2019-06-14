@@ -4,7 +4,6 @@
 int main() {
 	scalar<double> a(1), b(2);
 	var<double> x(1), y(1), z(1);
-	node<double>* p;
 	VAL<double> v;
 	AD<double> F, G, H, T;
 	gNode<double> U;
