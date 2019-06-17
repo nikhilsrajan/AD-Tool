@@ -157,14 +157,13 @@
   <ItemGroup>
     <ClInclude Include="AD.h" />
     <ClInclude Include="counter.h" />
-    <ClInclude Include="gNode.h" />
-    <ClInclude Include="OP.h" />
+    <ClInclude Include="pNode.h" />
+    <ClInclude Include="op.h" />
     <ClInclude Include="scalar.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="VAL.h" />
     <ClInclude Include="var.h" />
-    <ClInclude Include="vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

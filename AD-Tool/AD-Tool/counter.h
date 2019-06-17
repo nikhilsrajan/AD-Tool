@@ -1,6 +1,6 @@
 #pragma once
 
-#include<memory>
+#include <memory>
 
 static unsigned int count = 0;
 
@@ -21,12 +21,10 @@ public:
 		return *pcount;
 	}
 
-	// pre-increment operator
 	unsigned int operator++() {
 		return ++(*pcount);
 	}
 
-	// pre-decrement operator
 	unsigned int operator--() {
 		if ((*pcount) != 0)
 			return --(*pcount);
@@ -34,14 +32,12 @@ public:
 			return (*pcount);
 	}
 
-	// post-increment operator
 	unsigned int operator++(int) {
 		unsigned int old = *pcount;
 		++(*pcount);
 		return old;
 	}
 
-	// post-decrement operator
 	unsigned int operator--(int) {
 		unsigned int old = *pcount;
 

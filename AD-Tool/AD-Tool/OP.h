@@ -1,37 +1,40 @@
 #pragma once
 
+#include <iostream>
 #include "VAL.h"
 
+namespace sym {
+	template<class T>
+	class op :public node<T> {
+		op* self;
+		char operation, type;
+
+	public:
+		op() { this->operation = '\0'; this->self = this; this->type = 'o'; }
+		op(char ch) { this->operation = ch; this->self = this; this->type = 'o'; }
+		op(char ch, node<T>* L) { this->operation = ch; this->setLchild(L); this->self = this; this->type = 'o'; }
+		op(char ch, node<T>* L, node<T>* R) { this->operation = ch; this->setLchild(L); this->setRchild(R); this->self = this; this->type = 'o'; }
+		op(op<T>& O) { this->operation = O.operation; this->setLchild(O.getLchild()); this->setRchild(O.getRchild()); this->self = this; this->type = 'o'; }
+
+		void operator =(op<T> O) { this->operation = O.operation; this->setLchild(O.getLchild()); this->setRchild(O.getRchild()); }
+
+		op<T>* getself() { return this->self; }
+		char gettype() { return this->type; }
+
+		node<T>* clone() { return new op<T>(*this); }
+
+		void disp() {
+			std::cout << "OP: operation = " << this->operation << ", address = " << this->self << std::endl;
+		}
+
+		VAL<T> getVAL();
+	};
+}
+
 template<class T>
-class OP :public node<T> {
-	OP* self;
-	char op, type;
-
-public:
-	OP() { this->op = '\0'; this->self = this; this->type = 'o'; }
-	OP(char ch) { this->op = ch; this->self = this; this->type = 'o'; }
-	OP(char ch, node<T>* L) { this->op = ch; this->setLchild(L); this->self = this; this->type = 'o'; }
-	OP(char ch, node<T>* L, node<T>* R) { this->op = ch; this->setLchild(L); this->setRchild(R); this->self = this; this->type = 'o'; }
-	OP(OP<T>& O) { this->op = O.op; this->setLchild(O.getLchild()); this->setRchild(O.getRchild()); this->self = this; this->type = 'o'; }
-
-	void operator =(OP<T> O) { this->op = O.op; this->setLchild(O.getLchild()); this->setRchild(O.getRchild()); }
-
-	OP<T>* getself() { return this->self; }
-	char gettype() { return this->type; }
-
-	node<T>* clone() { return new OP<T>(*this); }
-
-	void disp() {
-		cout << "OP: op = " << this->op << ", address = " << this->self << endl;
-	}
-
-	VAL<T> getVAL();
-};
-
-template<class T>
-VAL<T> OP<T>::getVAL() {
+sym::VAL<T> sym::op<T>::getVAL() {
 	VAL<T> v;
-	switch (this->op) {
+	switch (this->operation) {
 	case '+':
 		if (this->getRchild() == NULL)
 			v = this->getleftVAL();
@@ -47,7 +50,7 @@ VAL<T> OP<T>::getVAL() {
 	case '*': v = this->getleftVAL() * this->getrightVAL(); break;
 	case '/': v = this->getleftVAL() / this->getrightVAL(); break;
 	case '^': v = this->getleftVAL() ^ this->getrightVAL(); break;
-	default: cout << "ERROR: Invalid Operator.\n"; exit(1); break;
+	default: std::cout << "ERROR: Invalid Operator.\n"; exit(1); break;
 	}
 	return v;
 }

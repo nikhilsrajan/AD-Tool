@@ -1,76 +1,74 @@
 #pragma once
 #include <iostream>
+#include <vector>
 
 #include "counter.h"
 
-using namespace std;
+namespace sym {
+	template <class T>
+	class VAL {
+		T f;
+		std::vector<T> df;
+		counter idc;
+	public:
+		VAL();
 
-template <class T>
-class VAL {
-	T f;
-	T* df;
-	counter idc;
-public:
-	VAL();
+		void disp() {
+			std::cout << "f = " << this->f << std::endl;
+			std::cout << "df = ";
+			for (int i = 0; i < idc; i++)
+				std::cout << this->df[i] << "   ";
+			std::cout << std::endl;
+		}
 
-	void disp() {
-		cout << "f = " << this->f << endl;
-		cout << "df = ";
-		for (int i = 0; i < idc; i++)
-			cout << this->df[i] << "   ";
-		cout << endl;
-	}
+		void input_f(T k) { this->f = k; }
+		void input_df(std::vector<T> dk) { this->df = dk; }
 
-	void input_f(T k) { this->f = k; }
-	void input_df(T* dk) { this->df = dk; }
+		T getf() { return f; }
 
-	T getf() { return f; }
+		T& operator [] (int);
 
-	T& operator [] (int);
+		/**Member Functions*/
+		/**Unary operators*/
+		VAL operator +(); //defined
+		VAL operator -(); //defined
 
-	/**Member Functions*/
-	/**Unary operators*/
-	VAL operator +(); //defined
-	VAL operator -(); //defined
-
-	/**Binary operators*/
-	void operator =(VAL); // defined
-	VAL operator +(VAL); // defined
-	VAL operator -(VAL); // defined
-	VAL operator *(VAL); // defined
-	VAL operator /(VAL); // defined
-	VAL operator ^(VAL); // defined
-};
-
-template<class T>
-VAL<T>::VAL() {
-	this->f = 0.0;
-	this->df = new T[this->idc.getCount()];
-
-	for (int i = 0; i < idc; i++)
-		this->df[i] = 0.0;
+		/**Binary operators*/
+		void operator =(VAL); // defined
+		VAL operator +(VAL); // defined
+		VAL operator -(VAL); // defined
+		VAL operator *(VAL); // defined
+		VAL operator /(VAL); // defined
+		VAL operator ^(VAL); // defined
+	};
 }
 
 template<class T>
-T& VAL<T>::operator [] (int k) {
+sym::VAL<T>::VAL() {
+	this->f = 0.0;
+	this->df = std::vector<T>(idc.getCount(), 0.0);
+}
+
+template<class T>
+T& sym::VAL<T>::operator [] (int k) {
 	if (k < idc)
 		return df[k];
 	else {
-		cout << "Index out of bound!";
+		std::cout << "Index out of bound!";
 		exit(1);
 	}
 }
 
 /**VAL: Operator Overloading*/
 template<class T>
-void VAL<T>::operator =(VAL g) {
+void sym::VAL<T>::operator =(VAL g) {
 	this->f = g.f;
 	for (int i = 0; i < idc; i++)
 		this->df[i] = g.df[i];
 }
 
 template<class T>
-VAL<T> VAL<T>::operator +() {
+sym::VAL<T> sym::VAL<T>::operator +() {
 	VAL<T> h;
 	h.f = f;
 	for (int i = 0; i < idc; i++)
@@ -79,7 +77,7 @@ VAL<T> VAL<T>::operator +() {
 }
 
 template<class T>
-VAL<T> VAL<T>::operator -() {
+sym::VAL<T> sym::VAL<T>::operator -() {
 	VAL<T> h;
 	h.f = -(this->f);
 	for (int i = 0; i < idc; i++)
@@ -88,8 +86,8 @@ VAL<T> VAL<T>::operator -() {
 }
 
 template<class T>
-VAL<T> VAL<T>::operator +(VAL g) {
-	VAL<T> h;
+sym::VAL<T> sym::VAL<T>::operator +(sym::VAL<T> g) {
+	sym::VAL<T> h;
 	h.f = this->f + g.f;
 	for (int i = 0; i < idc; i++)
 		h.df[i] = this->df[i] + g.df[i];
@@ -97,7 +95,7 @@ VAL<T> VAL<T>::operator +(VAL g) {
 }
 
 template<class T>
-VAL<T> VAL<T>::operator -(VAL g) {
+sym::VAL<T> sym::VAL<T>::operator -(sym::VAL<T> g) {
 	VAL<T> h;
 	h.f = this->f - g.f;
 	for (int i = 0; i < idc; i++)
@@ -106,7 +104,7 @@ VAL<T> VAL<T>::operator -(VAL g) {
 }
 
 template<class T>
-VAL<T> VAL<T>::operator *(VAL g) {
+sym::VAL<T> sym::VAL<T>::operator *(sym::VAL<T> g) {
 	VAL<T> h;
 	h.f = this->f * g.f;
 	for (int i = 0; i < idc; i++)
@@ -115,13 +113,13 @@ VAL<T> VAL<T>::operator *(VAL g) {
 }
 
 template<class T>
-VAL<T> VAL<T>::operator /(VAL g) {
+sym::VAL<T> sym::VAL<T>::operator /(sym::VAL<T> g) {
 	if (g.f == 0) {
-		cout << "MATH ERROR: Division by Zero!\n";
+		std::cout << "MATH ERROR: Division by Zero!\n";
 		exit(1);
 	}
 	else {
-		VAL<T> h;
+		sym::VAL<T> h;
 		h.f = this->f / g.f;
 		for (int i = 0; i < idc; i++)
 			h.df[i] = this->df[i] / g.f - this->f * g.df[i] / (g.f * g.f);
@@ -130,14 +128,14 @@ VAL<T> VAL<T>::operator /(VAL g) {
 }
 
 template<class T>
-VAL<T> VAL<T>::operator ^(VAL g) {
-	VAL<T> h;
+sym::VAL<T> sym::VAL<T>::operator ^(sym::VAL<T> g) {
+	sym::VAL<T> h;
 	if (this->f == 0 && g.f == 0) {
-		cout << "MATH ERROR: 0^0 Undefined!\n";
+		std::cout << "MATH ERROR: 0^0 Undefined!\n";
 		exit(1);
 	}
 	else if (this->f == 0 && g.f < 0) {
-		cout << "MATH ERROR: Division by Zero!\n";
+		std::cout << "MATH ERROR: Division by Zero!\n";
 		exit(1);
 	}
 	else
@@ -159,7 +157,7 @@ VAL<T> VAL<T>::operator ^(VAL g) {
 				h.df[i] = 0.0;
 		}
 		else {
-			cout << "MATH ERROR: Division by Zero!\n";
+			std::cout << "MATH ERROR: Division by Zero!\n";
 			exit(1);
 		}
 	}
@@ -168,7 +166,7 @@ VAL<T> VAL<T>::operator ^(VAL g) {
 			h.df[i] = pow(this->f, (g.f - 1)) * g.f * this->df[i] + pow(this->f, g.f) * g.df[i] * log(this->f);
 	}
 	else {
-		cout << "MATH ERROR: LOG undefined for values <= 0!\n";
+		std::cout << "MATH ERROR: LOG undefined for values <= 0!\n";
 		exit(1);
 	}
 	return h;
