@@ -6,7 +6,7 @@ int main() {
 	var<double> x(1), y(1), z(1);
 	VAL<double> v;
 	AD<double> F, G, H, T;
-	gNode<double> U;
+	pNode<double> U;
 
 	F = (1.0 + 2.0) / ((x * x) / ((x + y) * z) + 1.0);
 	F.disp();
@@ -16,21 +16,21 @@ int main() {
 	G = U + 1.0;
 	G.disp(1);
 
-	cout << endl;
+	std::cout << std::endl;
 
 	U = x;
 	G.disp(1);
 
-	cout << endl;
+	std::cout << std::endl;
 
 	U = F;
 	G.disp(1);
 
-	cout << endl;
+	std::cout << std::endl;
 	T = F + 1.0;
 	T.disp(1);
 
-	cout << endl;
+	std::cout << std::endl;
 	H = copyAD(G);
 	H.disp(1);
 

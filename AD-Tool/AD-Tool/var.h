@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "node.h"
 #include "VAL.h"
 #include "counter.h"
@@ -13,15 +14,15 @@ class var :public node<T> {
 	char type;
 
 public:
-	var() { this->id = ++idc; this->self = this; this->type = 'v'; }
-	var(T k) { this->id = ++idc; this->val = k; this->self = this; this->type = 'v'; }
+	var() { this->id = idc++; this->self = this; this->type = 'v'; }
+	var(T k) { this->id = idc++; this->val = k; this->self = this; this->type = 'v'; }
 
 	void operator =(T k) { this->val = k; }
 	void operator =(scalar<T> s) { this->p = s.getval(); }
 	void operator =(var<T> x) { this->val = x.val; }
 
 	void disp() {
-		cout << "VAR: id = " << this->id << ", val = " << this->val << ", address = " << this->self << endl;
+		std::cout << "VAR: id = " << this->id << ", val = " << this->val << ", address = " << this->self << std::endl;
 	}
 	node<T>* clone() { return this; }
 	var<T>* getself() { return this->self; }
@@ -33,15 +34,9 @@ template<class T>
 VAL<T> var<T>::getVAL() {
 	VAL<T> v;
 	v.input_f(this->val);
-	T* df = new T[idc.getCount()];
-
-	for (int i = 0; i < this->id; ++i)
-		df[i] = 0.0;
+	std::vector<T> df(idc.getCount(), 0.0);
 
 	df[this->id] = 1.0;
-
-	for (int i = this->id + 1; i < idc; i++)
-		df[i] = 0.0;
 
 	v.input_df(df);
 

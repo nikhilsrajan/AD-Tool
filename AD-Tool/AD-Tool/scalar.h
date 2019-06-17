@@ -4,8 +4,7 @@
 #include "VAL.h"
 #include "node.h"
 #include "counter.h"
- 
-using namespace std;
+
 
 template<class T>
 class scalar : public node<T> {
@@ -24,7 +23,7 @@ public:
 	void operator =(scalar<T> s) { this->val = s.val; }
 
 	void disp() {
-		cout << "SCALAR: val = " << this->val << ", address = " << this->self << endl;
+		std::cout << "SCALAR: val = " << this->val << ", address = " << this->self << std::endl;
 	}
 	node<T>* clone() { return this; }
 	scalar<T>* getself() { return this->self; }
@@ -36,10 +35,7 @@ template<class T>
 VAL<T> scalar<T>::getVAL() {
 	VAL<T> v;
 	v.input_f(this->val);
-	T* df = new T[this->idc.getCount()];
-
-	for (int i = 0; i < this->idc.getCount(); i++)
-		df[i] = 0.0;
+	std::vector<T> df(idc.getCount(), 0.0);
 
 	v.input_df(df);
 

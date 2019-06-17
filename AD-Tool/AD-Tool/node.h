@@ -1,8 +1,7 @@
 #pragma once
 
+#include <iostream>
 #include "VAL.h"
-
-using namespace std;
 
 template<class T>
 class node {
@@ -32,16 +31,16 @@ public:
 template<class T>
 void node<T>::InOrderTreeWalk() {
 	if (this->Lchild != NULL) {
-		cout << "LEFT: ";
+		std::cout << "LEFT: ";
 		this->Lchild->InOrderTreeWalk();
 	}
 
-	cout << "THIS ";
-	cout << " [" << this->gettype() << "] : ";
+	std::cout << "THIS ";
+	std::cout << " [" << this->gettype() << "] : ";
 	this->disp();
 
 	if (this->Rchild != NULL) {
-		cout << "RGHT: ";
+		std::cout << "RGHT: ";
 		this->Rchild->InOrderTreeWalk();
 	}
 }

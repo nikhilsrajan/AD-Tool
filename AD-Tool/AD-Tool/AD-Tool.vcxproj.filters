@@ -13,37 +13,43 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Tools">
+      <UniqueIdentifier>{ddda2589-1841-4206-bcf8-751fee697b55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Nodes">
+      <UniqueIdentifier>{d7226480-179c-4def-b521-b6d2279b6f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Additional Math Classes">
+      <UniqueIdentifier>{9f31bca1-82dd-4a1d-a941-109cb08bfbee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AD.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="scalar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="counter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="var.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VAL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="node.h">
+      <Filter>Header Files\Nodes</Filter>
     </ClInclude>
-    <ClInclude Include="gNode.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="scalar.h">
+      <Filter>Header Files\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="var.h">
+      <Filter>Header Files\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="counter.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix.h">
+      <Filter>Header Files\Additional Math Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="op.h">
+      <Filter>Header Files\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="pNode.h">
+      <Filter>Header Files\Nodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

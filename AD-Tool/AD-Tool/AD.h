@@ -1,27 +1,28 @@
 /* Make changes in the code to take care of intermediate variable inclusion!! */
-/* Replace friend functions */
+/* Add "context" or domain - protecting the globally visible counter */
+/* Rename functions - disp to display, reeval to reEval ? stay consistent */
+/* Contain everything within my own namespace */
+/* Pass by reference - makes things faster */
 /* Define gNode operators */
+
 #pragma once
 
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
-#include "vector.h"
 #include "matrix.h"
-
 
 #include "node.h"
 #include "scalar.h"
 #include "var.h"
-#include "OP.h"
-#include "gNode.h"
+#include "op.h"
+#include "pNode.h"
 
 #include "VAL.h"
 
 #include "counter.h"
-
-using namespace std;
 
 template<class T>
 class AD {
@@ -38,7 +39,7 @@ public:
 	void operator =(T);
 	void operator =(var<T>);
 	void operator =(AD<T>);
-	void operator =(gNode<T>);
+	void operator =(pNode<T>);
 
 	void setval(VAL<T> v) { val = v; }
 	void seteval(node<T>* ev) { eval = ev; }
@@ -47,21 +48,21 @@ public:
 	node<T>* geteval() { return eval; }
 
 	template<class U>
-	friend AD<U> copyAD(AD<U>);
+	AD<U> copyAD(AD<U>);
 
 	/**Math operators */
 	AD<T> operator +(); //defined
 	AD<T> operator -(); //defined
 
 	template<class U>
-	friend AD<U> operator +(var<U>);
+	friend AD<U> operator +(var<U>); //defined
 	template<class U>
-	friend AD<U> operator -(var<U>);
+	friend AD<U> operator -(var<U>); //defined
 
 	template<class U>
-	friend AD<U> operator +(gNode<U>);
+	friend AD<U> operator +(pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator -(gNode<U>);
+	friend AD<U> operator -(pNode<U>); //defined
 
 	AD<T> operator +(T); //defined
 	AD<T> operator -(T); //defined
@@ -81,11 +82,11 @@ public:
 	AD<T> operator /(AD<T>); //defined
 	AD<T> operator ^(AD<T>); //defined
 
-	AD<T> operator +(gNode<T>); //defined
-	AD<T> operator -(gNode<T>); //defined
-	AD<T> operator *(gNode<T>); //defined
-	AD<T> operator /(gNode<T>); //defined
-	AD<T> operator ^(gNode<T>); //defined
+	AD<T> operator +(pNode<T>); //defined
+	AD<T> operator -(pNode<T>); //defined
+	AD<T> operator *(pNode<T>); //defined
+	AD<T> operator /(pNode<T>); //defined
+	AD<T> operator ^(pNode<T>); //defined
 
 	template<class U>
 	friend AD<U> operator +(U, var<U>); //defined
@@ -110,15 +111,15 @@ public:
 	friend AD<U> operator ^(U, AD<U>); //defined
 
 	template<class U>
-	friend AD<U> operator +(U, gNode<U>); //defined
+	friend AD<U> operator +(U, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator -(U, gNode<U>); //defined
+	friend AD<U> operator -(U, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator *(U, gNode<U>); //defined
+	friend AD<U> operator *(U, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator /(U, gNode<U>); //defined
+	friend AD<U> operator /(U, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator ^(U, gNode<U>); //defined
+	friend AD<U> operator ^(U, pNode<U>); //defined
 
 	template<class U>
 	friend AD<U> operator +(var<U>, U); //defined
@@ -154,64 +155,64 @@ public:
 	friend AD<U> operator ^(var<U>, AD<U>); //defined
 
 	template<class U>
-	friend AD<U> operator +(var<U>, gNode<U>); //defined
+	friend AD<U> operator +(var<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator -(var<U>, gNode<U>); //defined
+	friend AD<U> operator -(var<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator *(var<U>, gNode<U>); //defined
+	friend AD<U> operator *(var<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator /(var<U>, gNode<U>); //defined
+	friend AD<U> operator /(var<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator ^(var<U>, gNode<U>); //defined
+	friend AD<U> operator ^(var<U>, pNode<U>); //defined
 
 	template<class U>
-	friend AD<U> operator +(gNode<U>, U); //defined
+	friend AD<U> operator +(pNode<U>, U); //defined
 	template<class U>
-	friend AD<U> operator -(gNode<U>, U); //defined
+	friend AD<U> operator -(pNode<U>, U); //defined
 	template<class U>
-	friend AD<U> operator *(gNode<U>, U); //defined
+	friend AD<U> operator *(pNode<U>, U); //defined
 	template<class U>
-	friend AD<U> operator /(gNode<U>, U); //defined
+	friend AD<U> operator /(pNode<U>, U); //defined
 	template<class U>
-	friend AD<U> operator ^(gNode<U>, U); //defined
+	friend AD<U> operator ^(pNode<U>, U); //defined
 
 	template<class U>
-	friend AD<U> operator +(gNode<U>, var<U>); //defined
+	friend AD<U> operator +(pNode<U>, var<U>); //defined
 	template<class U>
-	friend AD<U> operator -(gNode<U>, var<U>); //defined
+	friend AD<U> operator -(pNode<U>, var<U>); //defined
 	template<class U>
-	friend AD<U> operator *(gNode<U>, var<U>); //defined
+	friend AD<U> operator *(pNode<U>, var<U>); //defined
 	template<class U>
-	friend AD<U> operator /(gNode<U>, var<U>); //defined
+	friend AD<U> operator /(pNode<U>, var<U>); //defined
 	template<class U>
-	friend AD<U> operator ^(gNode<U>, var<U>); //defined
+	friend AD<U> operator ^(pNode<U>, var<U>); //defined
 
 	template<class U>
-	friend AD<U> operator +(gNode<U>, AD<U>); //defined
+	friend AD<U> operator +(pNode<U>, AD<U>); //defined
 	template<class U>
-	friend AD<U> operator -(gNode<U>, AD<U>); //defined
+	friend AD<U> operator -(pNode<U>, AD<U>); //defined
 	template<class U>
-	friend AD<U> operator *(gNode<U>, AD<U>); //defined
+	friend AD<U> operator *(pNode<U>, AD<U>); //defined
 	template<class U>
-	friend AD<U> operator /(gNode<U>, AD<U>); //defined
+	friend AD<U> operator /(pNode<U>, AD<U>); //defined
 	template<class U>
-	friend AD<U> operator ^(gNode<U>, AD<U>); //defined
+	friend AD<U> operator ^(pNode<U>, AD<U>); //defined
 
 	template<class U>
-	friend AD<U> operator +(gNode<U>, gNode<U>); //defined
+	friend AD<U> operator +(pNode<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator -(gNode<U>, gNode<U>); //defined
+	friend AD<U> operator -(pNode<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator *(gNode<U>, gNode<U>); //defined
+	friend AD<U> operator *(pNode<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator /(gNode<U>, gNode<U>); //defined
+	friend AD<U> operator /(pNode<U>, pNode<U>); //defined
 	template<class U>
-	friend AD<U> operator ^(gNode<U>, gNode<U>); //defined
+	friend AD<U> operator ^(pNode<U>, pNode<U>); //defined
 
 	/**Advanced operations*/
 	/**Gradient*/
 	template <class U>
-	friend vector<U> grad(AD<U>);
+	friend std::vector<U> grad(AD<U>);
 
 	/**Jacobian*/
 	template <class U>
@@ -221,8 +222,8 @@ public:
 template<class T>
 AD<T> copyAD(AD<T> G) {
 	AD<T> H;
-	H.val = G.val;
-	H.eval = cloneNode(G.eval);
+	H.setval(G.getval());
+	H.seteval(cloneNode(G.geteval()));
 	return H;
 }
 
@@ -232,7 +233,7 @@ node<T>* cloneNode(node<T>* root) {
 	switch (root->gettype()) {
 	case 's': { return root; break; }
 	case 'v': { return root; break; }
-	case 'g': { return cloneNode(root->clone()); break; }
+	case 'p': { return cloneNode(root->clone()); break; }
 	case 'o': {
 		node<T>* O = root->clone();
 		O->setLchild(cloneNode(O->getLchild()));
@@ -241,7 +242,7 @@ node<T>* cloneNode(node<T>* root) {
 		break;
 	}
 	default: {
-		cout << "Invalid node object.\n";
+		std::cout << "Invalid node object.\n";
 		return NULL;
 		break;
 	}
@@ -284,7 +285,7 @@ void AD<T>::operator =(AD<T> G) {
 }
 
 template<class T>
-void AD<T>::operator =(gNode<T> g) {
+void AD<T>::operator =(pNode<T> g) {
 	this->val = g.getVAL();
 	this->eval = g.getself();
 }
@@ -295,7 +296,7 @@ AD<T> AD<T>::operator +() {
 	AD<T> H;
 
 	H.val = this->val;
-	OP<T>* O = new OP<T>('+', this->eval);
+	op<T>* O = new op<T>('+', this->eval);
 
 	H.eval = O;
 	return H;
@@ -306,7 +307,7 @@ AD<T> AD<T>::operator -() {
 	AD<T> H;
 
 	H.val = -(this->val);
-	OP<T>* O = new OP<T>('-', this->eval);
+	op<T>* O = new op<T>('-', this->eval);
 
 	H.eval = O;
 	return H;
@@ -320,7 +321,7 @@ AD<T> operator +(var<T> x) {
 	AD<T> H;
 
 	H.val = x.getVAL();
-	OP<T>* O = new OP<T>('+', x.getself());
+	op<T>* O = new op<T>('+', x.getself());
 
 	H.eval = O;
 	return H;
@@ -331,7 +332,7 @@ AD<T> operator -(var<T> x) {
 	AD<T> H;
 
 	H.val = -x.getVAL();
-	OP<T>* O = new OP<T>('-', x.getself());
+	op<T>* O = new op<T>('-', x.getself());
 
 	H.eval = O;
 	return H;
@@ -339,22 +340,22 @@ AD<T> operator -(var<T> x) {
 
 /**unary(gNode) */
 template<class T>
-AD<T> operator +(gNode<T> g) {
+AD<T> operator +(pNode<T> g) {
 	AD<T> H;
 
 	H.val = g.getVAL();
-	OP<T>* O = new OP<T>('+', g.getself());
+	op<T>* O = new op<T>('+', g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(gNode<T> g) {
+AD<T> operator -(pNode<T> g) {
 	AD<T> H;
 
 	H.val = -g.getVAL();
-	OP<T>* O = new OP<T>('-', g.getself());
+	op<T>* O = new op<T>('-', g.getself());
 
 	H.eval = O;
 	return H;
@@ -368,7 +369,7 @@ AD<T> AD<T>::operator +(T k) {
 
 	H.val = this->val + s->getVAL();
 
-	OP<T>* O = new OP<T>('+', this->eval, s);
+	op<T>* O = new op<T>('+', this->eval, s);
 
 	H.eval = O;
 	return H;
@@ -381,7 +382,7 @@ AD<T> AD<T>::operator -(T k) {
 
 	H.val = this->val - s->getVAL();
 
-	OP<T>* O = new OP<T>('-', this->eval, s);
+	op<T>* O = new op<T>('-', this->eval, s);
 
 	H.eval = O;
 	return H;
@@ -395,7 +396,7 @@ AD<T> AD<T>::operator *(T k) {
 
 	H.val = this->val * s->getVAL();
 
-	OP<T>* O = new OP<T>('*', this->eval, s);
+	op<T>* O = new op<T>('*', this->eval, s);
 
 	H.eval = O;
 	return H;
@@ -408,7 +409,7 @@ AD<T> AD<T>::operator /(T k) {
 
 	H.val = this->val / s->getVAL();
 
-	OP<T>* O = new OP<T>('/', this->eval, s);
+	op<T>* O = new op<T>('/', this->eval, s);
 
 	H.eval = O;
 	return H;
@@ -421,7 +422,7 @@ AD<T> AD<T>::operator ^(T k) {
 
 	H.val = this->val ^ s->getVAL();
 
-	OP<T>* O = new OP<T>('^', this->eval, s);
+	op<T>* O = new op<T>('^', this->eval, s);
 
 	H.eval = O;
 	return H;
@@ -434,7 +435,7 @@ AD<T> AD<T>::operator +(var<T> x) {
 
 	H.val = this->val + x.getVAL();
 
-	OP<T>* O = new OP<T>('+', this->eval, x.getself());
+	op<T>* O = new op<T>('+', this->eval, x.getself());
 
 	H.eval = O;
 	return H;
@@ -446,7 +447,7 @@ AD<T> AD<T>::operator -(var<T> x) {
 
 	H.val = this->val - x.getVAL();
 
-	OP<T>* O = new OP<T>('-', this->eval, x.getself());
+	op<T>* O = new op<T>('-', this->eval, x.getself());
 
 	H.eval = O;
 	return H;
@@ -459,7 +460,7 @@ AD<T> AD<T>::operator *(var<T> x) {
 
 	H.val = this->val * x.getVAL();
 
-	OP<T>* O = new OP<T>('*', this->eval, x.getself());
+	op<T>* O = new op<T>('*', this->eval, x.getself());
 
 	H.eval = O;
 	return H;
@@ -471,7 +472,7 @@ AD<T> AD<T>::operator /(var<T> x) {
 
 	H.val = this->val / x.getVAL();
 
-	OP<T>* O = new OP<T>('/', this->eval, x.getself());
+	op<T>* O = new op<T>('/', this->eval, x.getself());
 
 	H.eval = O;
 	return H;
@@ -483,7 +484,7 @@ AD<T> AD<T>::operator ^(var<T> x) {
 
 	H.val = this->val ^ x.getVAL();
 
-	OP<T>* O = new OP<T>('^', this->eval, x.getself());
+	op<T>* O = new op<T>('^', this->eval, x.getself());
 
 	H.eval = O;
 	return H;
@@ -496,7 +497,7 @@ AD<T> AD<T>::operator +(AD<T> G) {
 
 	H.val = this->val + G.val;
 
-	OP<T>* O = new OP<T>('+', this->eval, G.eval);
+	op<T>* O = new op<T>('+', this->eval, G.eval);
 
 	H.eval = O;
 	return H;
@@ -508,7 +509,7 @@ AD<T> AD<T>::operator -(AD<T> G) {
 
 	H.val = this->val - G.val;
 
-	OP<T>* O = new OP<T>('-', this->eval, G.eval);
+	op<T>* O = new op<T>('-', this->eval, G.eval);
 
 	H.eval = O;
 	return H;
@@ -520,7 +521,7 @@ AD<T> AD<T>::operator *(AD<T> G) {
 
 	H.val = this->val * G.val;
 
-	OP<T>* O = new OP<T>('*', this->eval, G.eval);
+	op<T>* O = new op<T>('*', this->eval, G.eval);
 
 	H.eval = O;
 	return H;
@@ -532,7 +533,7 @@ AD<T> AD<T>::operator /(AD<T> G) {
 
 	H.val = this->val / G.val;
 
-	OP<T>* O = new OP<T>('/', this->eval, G.eval);
+	op<T>* O = new op<T>('/', this->eval, G.eval);
 
 	H.eval = O;
 	return H;
@@ -544,7 +545,7 @@ AD<T> AD<T>::operator ^(AD<T> G) {
 
 	H.val = this->val ^ G.val;
 
-	OP<T>* O = new OP<T>('^', this->eval, G.eval);
+	op<T>* O = new op<T>('^', this->eval, G.eval);
 
 	H.eval = O;
 	return H;
@@ -552,60 +553,60 @@ AD<T> AD<T>::operator ^(AD<T> G) {
 
 /**binary(AD, gNode) */
 template<class T>
-AD<T> AD<T>::operator +(gNode<T> g) {
+AD<T> AD<T>::operator +(pNode<T> g) {
 	AD<T> H;
 
 	H.val = this->val + g.getVAL();
 
-	OP<T>* O = new OP<T>('+', this->eval, g.getself());
+	op<T>* O = new op<T>('+', this->eval, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> AD<T>::operator -(gNode<T> g) {
+AD<T> AD<T>::operator -(pNode<T> g) {
 	AD<T> H;
 
 	H.val = this->val - g.getVAL();
 
-	OP<T>* O = new OP<T>('-', this->eval, g.getself());
+	op<T>* O = new op<T>('-', this->eval, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> AD<T>::operator *(gNode<T> g) {
+AD<T> AD<T>::operator *(pNode<T> g) {
 	AD<T> H;
 
 	H.val = this->val * g.getVAL();
 
-	OP<T>* O = new OP<T>('*', this->eval, g.getself());
+	op<T>* O = new op<T>('*', this->eval, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> AD<T>::operator /(gNode<T> g) {
+AD<T> AD<T>::operator /(pNode<T> g) {
 	AD<T> H;
 
 	H.val = this->val / g.getVAL();
 
-	OP<T>* O = new OP<T>('/', this->eval, g.getself());
+	op<T>* O = new op<T>('/', this->eval, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> AD<T>::operator ^(gNode<T> g) {
+AD<T> AD<T>::operator ^(pNode<T> g) {
 	AD<T> H;
 
 	H.val = this->val ^ g.getVAL();
 
-	OP<T>* O = new OP<T>('^', this->eval, g.getself());
+	op<T>* O = new op<T>('^', this->eval, g.getself());
 
 	H.eval = O;
 	return H;
@@ -621,7 +622,7 @@ AD<T> operator +(T k, var<T> x) {
 
 	H.val = s->getVAL() + x.getVAL();
 
-	OP<T>* O = new OP<T>('+', s, x.getself());
+	op<T>* O = new op<T>('+', s, x.getself());
 
 	H.eval = O;
 	return H;
@@ -634,7 +635,7 @@ AD<T> operator -(T k, var<T> x) {
 
 	H.val = s->getVAL() - x.getVAL();
 
-	OP<T>* O = new OP<T>('-', s, x.getself());
+	op<T>* O = new op<T>('-', s, x.getself());
 
 	H.eval = O;
 	return H;
@@ -647,7 +648,7 @@ AD<T> operator *(T k, var<T> x) {
 
 	H.val = s->getVAL() * x.getVAL();
 
-	OP<T>* O = new OP<T>('*', s, x.getself());
+	op<T>* O = new op<T>('*', s, x.getself());
 
 	H.eval = O;
 	return H;
@@ -660,7 +661,7 @@ AD<T> operator /(T k, var<T> x) {
 
 	H.val = s->getVAL() / x.getVAL();
 
-	OP<T>* O = new OP<T>('/', s, x.getself());
+	op<T>* O = new op<T>('/', s, x.getself());
 
 	H.eval = O;
 	return H;
@@ -673,7 +674,7 @@ AD<T> operator ^(T k, var<T> x) {
 
 	H.val = s->getVAL() ^ x.getVAL();
 
-	OP<T>* O = new OP<T>('^', s, x.getself());
+	op<T>* O = new op<T>('^', s, x.getself());
 
 	H.eval = O;
 	return H;
@@ -687,7 +688,7 @@ AD<T> operator +(T k, AD<T> G) {
 
 	H.val = s->getVAL() + G.val;
 
-	OP<T>* O = new OP<T>('+', s, G.eval);
+	op<T>* O = new op<T>('+', s, G.eval);
 
 	H.eval = O;
 	return H;
@@ -700,7 +701,7 @@ AD<T> operator -(T k, AD<T> G) {
 
 	H.val = s->getVAL() - G.val;
 
-	OP<T>* O = new OP<T>('-', s, G.eval);
+	op<T>* O = new op<T>('-', s, G.eval);
 
 	H.eval = O;
 	return H;
@@ -713,7 +714,7 @@ AD<T> operator *(T k, AD<T> G) {
 
 	H.val = s->getVAL() * G.val;
 
-	OP<T>* O = new OP<T>('*', s, G.eval);
+	op<T>* O = new op<T>('*', s, G.eval);
 
 	H.eval = O;
 	return H;
@@ -726,7 +727,7 @@ AD<T> operator /(T k, AD<T> G) {
 
 	H.val = s->getVAL() / G.val;
 
-	OP<T>* O = new OP<T>('/', s, G.eval);
+	op<T>* O = new op<T>('/', s, G.eval);
 
 	H.eval = O;
 	return H;
@@ -739,7 +740,7 @@ AD<T> operator ^(T k, AD<T> G) {
 
 	H.val = s->getVAL() ^ G.val;
 
-	OP<T>* O = new OP<T>('^', s, G.eval);
+	op<T>* O = new op<T>('^', s, G.eval);
 
 	H.eval = O;
 	return H;
@@ -747,65 +748,65 @@ AD<T> operator ^(T k, AD<T> G) {
 
 /**binary(T, gNode) */
 template<class T>
-AD<T> operator +(T k, gNode<T> g) {
+AD<T> operator +(T k, pNode<T> g) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = s->getVAL() + g.getVAL();
 
-	OP<T>* O = new OP<T>('+', s, g.getself());
+	op<T>* O = new op<T>('+', s, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(T k, gNode<T> g) {
+AD<T> operator -(T k, pNode<T> g) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = s->getVAL() - g.getVAL();
 
-	OP<T>* O = new OP<T>('-', s, g.getself());
+	op<T>* O = new op<T>('-', s, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator *(T k, gNode<T> g) {
+AD<T> operator *(T k, pNode<T> g) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = s->getVAL() * g.getVAL();
 
-	OP<T>* O = new OP<T>('*', s, g.getself());
+	op<T>* O = new op<T>('*', s, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator /(T k, gNode<T> g) {
+AD<T> operator /(T k, pNode<T> g) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = s->getVAL() / g.getVAL();
 
-	OP<T>* O = new OP<T>('/', s, g.getself());
+	op<T>* O = new op<T>('/', s, g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator ^(T k, gNode<T> g) {
+AD<T> operator ^(T k, pNode<T> g) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = s->getVAL() ^ g.getVAL();
 
-	OP<T>* O = new OP<T>('^', s, g.getself());
+	op<T>* O = new op<T>('^', s, g.getself());
 
 	H.eval = O;
 	return H;
@@ -819,7 +820,7 @@ AD<T> operator +(var<T> x, T k) {
 
 	H.val = x.getVAL() + s->getVAL();
 
-	OP<T>* O = new OP<T>('+', x.getself(), s);
+	op<T>* O = new op<T>('+', x.getself(), s);
 
 	H.eval = O;
 	return H;
@@ -832,7 +833,7 @@ AD<T> operator -(var<T> x, T k) {
 
 	H.val = x.getVAL() - s->getVAL();
 
-	OP<T>* O = new OP<T>('-', x.getself(), s);
+	op<T>* O = new op<T>('-', x.getself(), s);
 
 	H.eval = O;
 	return H;
@@ -845,7 +846,7 @@ AD<T> operator *(var<T> x, T k) {
 
 	H.val = x.getVAL() * s->getVAL();
 
-	OP<T>* O = new OP<T>('*', x.getself(), s);
+	op<T>* O = new op<T>('*', x.getself(), s);
 
 	H.eval = O;
 	return H;
@@ -858,7 +859,7 @@ AD<T> operator /(var<T> x, T k) {
 
 	H.val = x.getVAL() / s->getVAL();
 
-	OP<T>* O = new OP<T>('/', x.getself(), s);
+	op<T>* O = new op<T>('/', x.getself(), s);
 
 	H.eval = O;
 	return H;
@@ -871,7 +872,7 @@ AD<T> operator ^(var<T> x, T k) {
 
 	H.val = x.getVAL() ^ s->getVAL();
 
-	OP<T>* O = new OP<T>('^', x.getself(), s);
+	op<T>* O = new op<T>('^', x.getself(), s);
 
 	H.eval = O;
 	return H;
@@ -884,7 +885,7 @@ AD<T> operator +(var<T> x, var<T> y) {
 
 	H.val = x.getVAL() + y.getVAL();
 
-	OP<T>* O = new OP<T>('+', x.getself(), y.getself());
+	op<T>* O = new op<T>('+', x.getself(), y.getself());
 
 	H.eval = O;
 	return H;
@@ -896,7 +897,7 @@ AD<T> operator -(var<T> x, var<T> y) {
 
 	H.val = x.getVAL() - y.getVAL();
 
-	OP<T>* O = new OP<T>('-', x.getself(), y.getself());
+	op<T>* O = new op<T>('-', x.getself(), y.getself());
 
 	H.eval = O;
 	return H;
@@ -908,7 +909,7 @@ AD<T> operator *(var<T> x, var<T> y) {
 
 	H.val = x.getVAL() * y.getVAL();
 
-	OP<T>* O = new OP<T>('*', x.getself(), y.getself());
+	op<T>* O = new op<T>('*', x.getself(), y.getself());
 
 	H.eval = O;
 	return H;
@@ -920,7 +921,7 @@ AD<T> operator /(var<T> x, var<T> y) {
 
 	H.val = x.getVAL() / y.getVAL();
 
-	OP<T>* O = new OP<T>('/', x.getself(), y.getself());
+	op<T>* O = new op<T>('/', x.getself(), y.getself());
 
 	H.eval = O;
 	return H;
@@ -932,7 +933,7 @@ AD<T> operator ^(var<T> x, var<T> y) {
 
 	H.val = x.getVAL() ^ y.getVAL();
 
-	OP<T>* O = new OP<T>('^', x.getself(), y.getself());
+	op<T>* O = new op<T>('^', x.getself(), y.getself());
 
 	H.eval = O;
 	return H;
@@ -945,7 +946,7 @@ AD<T> operator +(var<T> x, AD<T> G) {
 
 	H.val = x.getVAL() + G.val;
 
-	OP<T>* O = new OP<T>('+', x.getself(), G.eval);
+	op<T>* O = new op<T>('+', x.getself(), G.eval);
 
 	H.eval = O;
 	return H;
@@ -957,7 +958,7 @@ AD<T> operator -(var<T> x, AD<T> G) {
 
 	H.val = x.getVAL() - G.val;
 
-	OP<T>* O = new OP<T>('-', x.getself(), G.eval);
+	op<T>* O = new op<T>('-', x.getself(), G.eval);
 
 	H.eval = O;
 	return H;
@@ -969,7 +970,7 @@ AD<T> operator *(var<T> x, AD<T> G) {
 
 	H.val = x.getVAL() * G.val;
 
-	OP<T>* O = new OP<T>('*', x.getself(), G.eval);
+	op<T>* O = new op<T>('*', x.getself(), G.eval);
 
 	H.eval = O;
 	return H;
@@ -981,7 +982,7 @@ AD<T> operator /(var<T> x, AD<T> G) {
 
 	H.val = x.getVAL() / G.val;
 
-	OP<T>* O = new OP<T>('/', x.getself(), G.eval);
+	op<T>* O = new op<T>('/', x.getself(), G.eval);
 
 	H.eval = O;
 	return H;
@@ -993,7 +994,7 @@ AD<T> operator ^(var<T> x, AD<T> G) {
 
 	H.val = x.getVAL() ^ G.val;
 
-	OP<T>* O = new OP<T>('^', x.getself(), G.eval);
+	op<T>* O = new op<T>('^', x.getself(), G.eval);
 
 	H.eval = O;
 	return H;
@@ -1001,60 +1002,60 @@ AD<T> operator ^(var<T> x, AD<T> G) {
 
 /**binary(var, gNode) */
 template<class T>
-AD<T> operator +(var<T> x, gNode<T> g) {
+AD<T> operator +(var<T> x, pNode<T> g) {
 	AD<T> H;
 
 	H.val = x.getVAL() + g.getVAL();
 
-	OP<T>* O = new OP<T>('+', x.getself(), g.getself());
+	op<T>* O = new op<T>('+', x.getself(), g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(var<T> x, gNode<T> g) {
+AD<T> operator -(var<T> x, pNode<T> g) {
 	AD<T> H;
 
 	H.val = x.getVAL() - g.getVAL();
 
-	OP<T>* O = new OP<T>('-', x.getself(), g.getself());
+	op<T>* O = new op<T>('-', x.getself(), g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator *(var<T> x, gNode<T> g) {
+AD<T> operator *(var<T> x, pNode<T> g) {
 	AD<T> H;
 
 	H.val = x.getVAL() * g.getVAL();
 
-	OP<T>* O = new OP<T>('*', x.getself(), g.getself());
+	op<T>* O = new op<T>('*', x.getself(), g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator /(var<T> x, gNode<T> g) {
+AD<T> operator /(var<T> x, pNode<T> g) {
 	AD<T> H;
 
 	H.val = x.getVAL() / g.getVAL();
 
-	OP<T>* O = new OP<T>('/', x.getself(), g.getself());
+	op<T>* O = new op<T>('/', x.getself(), g.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator ^(var<T> x, gNode<T> g) {
+AD<T> operator ^(var<T> x, pNode<T> g) {
 	AD<T> H;
 
 	H.val = x.getVAL() ^ g.getVAL();
 
-	OP<T>* O = new OP<T>('^', x.getself(), g.getself());
+	op<T>* O = new op<T>('^', x.getself(), g.getself());
 
 	H.eval = O;
 	return H;
@@ -1062,65 +1063,65 @@ AD<T> operator ^(var<T> x, gNode<T> g) {
 
 /**binary(gNode, T) */
 template<class T>
-AD<T> operator +(gNode<T> g, T k) {
+AD<T> operator +(pNode<T> g, T k) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = g.getVAL() + s->getVAL();
 
-	OP<T>* O = new OP<T>('+', g.getself(), s);
+	op<T>* O = new op<T>('+', g.getself(), s);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(gNode<T> g, T k) {
+AD<T> operator -(pNode<T> g, T k) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = g.getVAL() - s->getVAL();
 
-	OP<T>* O = new OP<T>('-', g.getself(), s);
+	op<T>* O = new op<T>('-', g.getself(), s);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator *(gNode<T> g, T k) {
+AD<T> operator *(pNode<T> g, T k) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = g.getVAL() * s->getVAL();
 
-	OP<T>* O = new OP<T>('*', g.getself(), s);
+	op<T>* O = new op<T>('*', g.getself(), s);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator /(gNode<T> g, T k) {
+AD<T> operator /(pNode<T> g, T k) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = g.getVAL() / s->getVAL();
 
-	OP<T>* O = new OP<T>('/', g.getself(), s);
+	op<T>* O = new op<T>('/', g.getself(), s);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator ^(gNode<T> g, T k) {
+AD<T> operator ^(pNode<T> g, T k) {
 	AD<T> H;
 	scalar<T>* s = new scalar<T>(k);
 
 	H.val = g.getVAL() ^ s->getVAL();
 
-	OP<T>* O = new OP<T>('^', g.getself(), s);
+	op<T>* O = new op<T>('^', g.getself(), s);
 
 	H.eval = O;
 	return H;
@@ -1128,60 +1129,60 @@ AD<T> operator ^(gNode<T> g, T k) {
 
 /**binary(gNode, var) */
 template<class T>
-AD<T> operator +(gNode<T> g, var<T> x) {
+AD<T> operator +(pNode<T> g, var<T> x) {
 	AD<T> H;
 
 	H.val = g.getVAL() + x.getVAL();
 
-	OP<T>* O = new OP<T>('+', g.getself(), x.getself());
+	op<T>* O = new op<T>('+', g.getself(), x.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(gNode<T> g, var<T> x) {
+AD<T> operator -(pNode<T> g, var<T> x) {
 	AD<T> H;
 
 	H.val = g.getVAL() - x.getVAL();
 
-	OP<T>* O = new OP<T>('-', g.getself(), x.getself());
+	op<T>* O = new op<T>('-', g.getself(), x.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator *(gNode<T> g, var<T> x) {
+AD<T> operator *(pNode<T> g, var<T> x) {
 	AD<T> H;
 
 	H.val = g.getVAL() * x.getVAL();
 
-	OP<T>* O = new OP<T>('*', g.getself(), x.getself());
+	op<T>* O = new op<T>('*', g.getself(), x.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator /(gNode<T> g, var<T> x) {
+AD<T> operator /(pNode<T> g, var<T> x) {
 	AD<T> H;
 
 	H.val = g.getVAL() / x.getVAL();
 
-	OP<T>* O = new OP<T>('/', g.getself(), x.getself());
+	op<T>* O = new op<T>('/', g.getself(), x.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator ^(gNode<T> g, var<T> x) {
+AD<T> operator ^(pNode<T> g, var<T> x) {
 	AD<T> H;
 
 	H.val = g.getVAL() ^ x.getVAL();
 
-	OP<T>* O = new OP<T>('^', g.getself(), x.getself());
+	op<T>* O = new op<T>('^', g.getself(), x.getself());
 
 	H.eval = O;
 	return H;
@@ -1189,60 +1190,60 @@ AD<T> operator ^(gNode<T> g, var<T> x) {
 
 /**binary(gNode, AD) */
 template<class T>
-AD<T> operator +(gNode<T> g, AD<T> G) {
+AD<T> operator +(pNode<T> g, AD<T> G) {
 	AD<T> H;
 
 	H.val = g.getVAL() + G.val;
 
-	OP<T>* O = new OP<T>('+', g.getself(), G.eval);
+	op<T>* O = new op<T>('+', g.getself(), G.eval);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(gNode<T> g, AD<T> G) {
+AD<T> operator -(pNode<T> g, AD<T> G) {
 	AD<T> H;
 
 	H.val = g.getVAL() - G.val;
 
-	OP<T>* O = new OP<T>('-', g.getself(), G.eval);
+	op<T>* O = new op<T>('-', g.getself(), G.eval);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator *(gNode<T> g, AD<T> G) {
+AD<T> operator *(pNode<T> g, AD<T> G) {
 	AD<T> H;
 
 	H.val = g.getVAL() * G.val;
 
-	OP<T>* O = new OP<T>('*', g.getself(), G.eval);
+	op<T>* O = new op<T>('*', g.getself(), G.eval);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator /(gNode<T> g, AD<T> G) {
+AD<T> operator /(pNode<T> g, AD<T> G) {
 	AD<T> H;
 
 	H.val = g.getVAL() / G.val;
 
-	OP<T>* O = new OP<T>('/', g.getself(), G.eval);
+	op<T>* O = new op<T>('/', g.getself(), G.eval);
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator ^(gNode<T> g, AD<T> G) {
+AD<T> operator ^(pNode<T> g, AD<T> G) {
 	AD<T> H;
 
 	H.val = g.getVAL() ^ G.val;
 
-	OP<T>* O = new OP<T>('^', g.getself(), G.eval);
+	op<T>* O = new op<T>('^', g.getself(), G.eval);
 
 	H.eval = O;
 	return H;
@@ -1250,60 +1251,60 @@ AD<T> operator ^(gNode<T> g, AD<T> G) {
 
 /**binary(gNode, gNode) */
 template<class T>
-AD<T> operator +(gNode<T> g, gNode<T> h) {
+AD<T> operator +(pNode<T> g, pNode<T> h) {
 	AD<T> H;
 
 	H.val = g.getVAL() + h.getVAL();
 
-	OP<T>* O = new OP<T>('+', g.getself(), h.getself());
+	op<T>* O = new op<T>('+', g.getself(), h.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator -(gNode<T> g, gNode<T> h) {
+AD<T> operator -(pNode<T> g, pNode<T> h) {
 	AD<T> H;
 
 	H.val = g.getVAL() - h.getVAL();
 
-	OP<T>* O = new OP<T>('-', g.getself(), h.getself());
+	op<T>* O = new op<T>('-', g.getself(), h.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator *(gNode<T> g, gNode<T> h) {
+AD<T> operator *(pNode<T> g, pNode<T> h) {
 	AD<T> H;
 
 	H.val = g.getVAL() * h.getVAL();
 
-	OP<T>* O = new OP<T>('*', g.getself(), h.getself());
+	op<T>* O = new op<T>('*', g.getself(), h.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator /(gNode<T> g, gNode<T> h) {
+AD<T> operator /(pNode<T> g, pNode<T> h) {
 	AD<T> H;
 
 	H.val = g.getVAL() / h.getVAL();
 
-	OP<T>* O = new OP<T>('/', g.getself(), h.getself());
+	op<T>* O = new op<T>('/', g.getself(), h.getself());
 
 	H.eval = O;
 	return H;
 }
 
 template<class T>
-AD<T> operator ^(gNode<T> g, gNode<T> h) {
+AD<T> operator ^(pNode<T> g, pNode<T> h) {
 	AD<T> H;
 
 	H.val = g.getVAL() ^ h.getVAL();
 
-	OP<T>* O = new OP<T>('^', g.getself(), h.getself());
+	op<T>* O = new op<T>('^', g.getself(), h.getself());
 
 	H.eval = O;
 	return H;
@@ -1311,9 +1312,9 @@ AD<T> operator ^(gNode<T> g, gNode<T> h) {
 
 /**Advanced operations*/
 template<class T>
-vector<T> grad(AD<T> G) {
+std::vector<T> grad(AD<T> G) {
 	counter idc;
-	vector<T> V(idc.getCount());
+	std::vector<T> V(idc.getCount(), 0);
 	for (int i = 0; i < idc; i++)
 		V[i] = G.val[i];
 
@@ -1321,7 +1322,7 @@ vector<T> grad(AD<T> G) {
 }
 
 template<class T>
-matrix<T> jacobian(int n, AD<T>* AD_list) {
+matrix<T> jacobian(int n, std::vector<AD<T>> AD_list) {
 	counter idc;
 	matrix<T> M(n, idc.getCount());
 	for (int i = 0; i < n; i++)
