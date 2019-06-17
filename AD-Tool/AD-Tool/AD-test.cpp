@@ -2,11 +2,11 @@
 #include "AD.h"
 
 int main() {
-	scalar<double> a(1), b(2);
-	var<double> x(1), y(1), z(1);
-	VAL<double> v;
-	AD<double> F, G, H, T;
-	pNode<double> U;
+	sym::scalar<double> a(1), b(2);
+	sym::var<double> x(1), y(1), z(1);
+	sym::VAL<double> v;
+	sym::AD<double> F, G, H, T;
+	sym::pNode<double> U;
 
 	F = (1.0 + 2.0) / ((x * x) / ((x + y) * z) + 1.0);
 	F.disp();
@@ -22,7 +22,7 @@ int main() {
 	G.disp(1);
 
 	std::cout << std::endl;
-
+	
 	U = F;
 	G.disp(1);
 
@@ -33,6 +33,7 @@ int main() {
 	std::cout << std::endl;
 	H = copyAD(G);
 	H.disp(1);
+	
 
 	return 0;
 }
