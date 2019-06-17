@@ -1,6 +1,7 @@
 /* Make changes in the code to take care of intermediate variable inclusion!! */
-/* Replace friend functions */
-/* Define gNode operators */
+/* Pass by reference */
+/* Context class to protect counter */
+
 #pragma once
 
 
